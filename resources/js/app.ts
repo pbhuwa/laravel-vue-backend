@@ -32,7 +32,7 @@ createInertiaApp({
         const lvApp = createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
-            .use(ElementPlus)
+            .use(ElementPlus);
 
         // Register Axios globally
         lvApp.config.globalProperties.$api = httpClient;

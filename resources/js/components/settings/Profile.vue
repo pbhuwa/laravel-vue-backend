@@ -70,43 +70,68 @@
         </div>
     </div>
 </template>
-<script setup lang="ts">
-import { ref } from 'vue';
-
-import HeadingSmall from '@/components/HeadingSmall.vue';
-import InputError from '@/components/InputError.vue';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+<script lang="ts">
+import { defineComponent} from 'vue'
+import HeadingSmall from '@/components/HeadingSmall.vue'
+import InputError from '@/components/InputError.vue'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { UploadFilled } from '@element-plus/icons-vue'
 
-const previewUrl = ref<string | null>(null)
-const name = ref('')
-const email = ref('')
-const image = ref<File | null>(null)
-const errors = ref<Record<string, string[]>>({})
+export default defineComponent({
+    components: {
+        HeadingSmall,
+        InputError,
+        Button,
+        Input,
+        Label,
+        UploadFilled,
+    },
+    data : () => ({
+        previewUrl: null as string | null,
+        name: '',
+        email: '',
+        image: null as File | null,
+        errors: {} as Record<string, string[]>,
+        loading: false
+    }),
 
-// handle file select
-const handleFileChange = (uploadFile: any) => {
-    const file = uploadFile.raw;
-    if (file) {
-        image.value = file;
+    methods: {
+        handleFileChange(uploadFile: any) {
+            const file = uploadFile.raw
+            if (file) {
+                this.image = file
 
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-        previewUrl.value = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-};
+                const reader = new FileReader()
+                reader.onload = (e: any) => {
+                this.previewUrl = e.target.result
+                }
+                reader.readAsDataURL(file)
+            }
+        },
+        async submit() {
+            const formData = new FormData()
+            formData.append('name', this.name)
+            formData.append('email', this.email)
+            if (this.image) {
+                formData.append('image', this.image)
+            }
 
-const submit = () => {
-    form.patch(route('profile.update'), {
-        preserveScroll: true,
-        forceFormData: false,
-        onSuccess: () => {
-            console.log( 'Profile updated successfully', );
-        }
-    });
-};
+            try {
+                await this.$api.patch(`api/settings/profile`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                })
+            } catch (err: any) {
+                if (err.response && err.response.status === 422) {
+                this.errors = err.response.data.errors
+                } else {
+                console.error('Unexpected error', err)
+                }
+            }
+        },
+    },
+})
 </script>

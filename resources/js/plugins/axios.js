@@ -9,7 +9,7 @@ let headers = {
 let token = document.head.querySelector('meta[name="csrf-token"]');
 if (token) {
     headers['Authorization'] = `Bearer ${token.content}`;
-}   else {
+} else {
     console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
 }
 
@@ -20,4 +20,14 @@ const httpClient = axios.create({
     withCredentials: true,
 });
 
+// interceptors (e.g., for token handling, logging, errors)
+httpClient.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response && error.response.status === 401) {
+      console.error('Unauthorized')
+    }
+    return Promise.reject(error)
+  }
+)
 export default httpClient;

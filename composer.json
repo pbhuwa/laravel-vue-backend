@@ -8,10 +8,19 @@
         "framework"
     ],
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Bhuwan Pariyar",
+            "email": "bhuwanpariyarr@gmail.com",
+            "homepage": "https://laravel-vue-backend.test/",
+            "role": "Developer"
+        }
+    ],
     "require": {
         "php": "^8.2",
         "inertiajs/inertia-laravel": "^2.0",
         "laravel/framework": "^12.0",
+        "laravel/passport": "^12.0",
         "laravel/tinker": "^2.10.1",
         "tightenco/ziggy": "^2.4"
     },
